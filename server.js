@@ -30,8 +30,10 @@ const transporter = nodemailer.createTransport({
 });
 
 
+const path = require('path');
+
 app.get('/', (req, res) => {
-  res.send(' PowerAlertHostel is running');
+  res.sendFile(path.join(__dirname, 'public', 'exam.html'));
 });
 
 
