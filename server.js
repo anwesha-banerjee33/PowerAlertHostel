@@ -96,7 +96,7 @@ const cron = require('node-cron');
 
 
 
-cron.schedule('0 22 * * *', async () => {
+cron.schedule('0 16 * * *', async () => {
 console.log('⏰ Running nightly exam reminder...');
 
   const today = new Date();
