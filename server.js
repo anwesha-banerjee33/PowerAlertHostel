@@ -121,15 +121,22 @@ app.get('/run-cron', async (req, res) => {
         subject: `📚 Reminder: Your ${exam.subject} exam is tomorrow!`,
         text: `Hello ${exam.studentName},
 
-📅 Your ${exam.subject} exam is scheduled for ${exam.date} at ${exam.time}.
+⚠️ **IMPORTANT: Power cuts may happen anytime!**  
+Please make sure to **fully charge all your devices** (laptop, mobile phones, power banks) and **download all necessary study materials** in advance to avoid any last-minute issues.
 
-✅ Please Remember:
-- Charge all your devices like laptop, mobile phones, power bank 🔋
-- Download necessary PDFs from whatsapp groups, videos from youtube, notes 📝
+Here’s a quick reminder for your upcoming exam:
+
+✅ Exam: ${exam.subject}  
+📅 Date: ${exam.date}  
+🕒 Time: ${exam.time}  
+
+Additional Tips:
+- Download PDFs, videos, and notes 📝
 - Stay calm and focused 😌
 
-Good luck!
+Good luck!  
 PowerAlertHostel`
+
       };
 
       transporter.sendMail(mailOptions, (error, info) => {
