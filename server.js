@@ -98,25 +98,25 @@ app.get('/api/exams', async (req, res) => {
   }
 });
 
-const cron = require('node-cron');
-
-
-
-cron.schedule('0 17 * * *', async () => {
-console.log('⏰ Running nightly exam reminder...');
+app.get('/run-cron', async (req, res) => {
+  console.log('🔔 /run-cron triggered');
 
   const today = new Date();
   const tomorrow = new Date(today);
   tomorrow.setDate(today.getDate() + 1);
-
-  const tomorrowStr = tomorrow.toISOString().split('T')[0];  
+  const tomorrowStr = tomorrow.toISOString().split('T')[0];
 
   try {
     const exams = await Exam.find({ date: tomorrowStr });
 
+    if (exams.length === 0) {
+      console.log('✅ No exams for tomorrow');
+      return res.send('No exams for tomorrow.');
+    }
+
     exams.forEach(exam => {
       const mailOptions = {
-        from: 'PowerAlertHostel <' + process.env.EMAIL_USER + '>',
+        from: `PowerAlertHostel <${process.env.EMAIL_USER}>`,
         to: exam.email,
         subject: `📚 Reminder: Your ${exam.subject} exam is tomorrow!`,
         text: `Hello ${exam.studentName},
@@ -134,15 +134,17 @@ PowerAlertHostel`
 
       transporter.sendMail(mailOptions, (error, info) => {
         if (error) {
-          console.error('Reminder Email Failed:', error);
+          console.error(' Reminder Email Failed:', error);
         } else {
-          console.log(' Reminder Email Sent:', info.response);
+          console.log(`Reminder Email Sent to ${exam.email}`);
         }
       });
     });
 
+    res.send(`${exams.length} email(s) sent successfully.`);
   } catch (error) {
-    console.error('Cron Job Error:', error);
+    console.error('Cron Route Error:', error);
+    res.status(500).send('Error running cron job.');
   }
 });
 
