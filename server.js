@@ -85,18 +85,24 @@ app.post('/api/exams', async (req, res) => {
 });
 
 app.get('/api/exams', async (req, res) => {
+  const { email } = req.query;  
+
   try {
-    const exams = await Exam.find();
+    let exams = [];
+    if (email) {
+      exams = await Exam.find({ email });
+    }  
     res.json(exams);
   } catch (error) {
     res.status(500).json({ message: 'Error fetching exams.' });
   }
 });
+
 const cron = require('node-cron');
 
 
 
-cron.schedule('0 16 * * *', async () => {
+cron.schedule('0 17 * * *', async () => {
 console.log('⏰ Running nightly exam reminder...');
 
   const today = new Date();

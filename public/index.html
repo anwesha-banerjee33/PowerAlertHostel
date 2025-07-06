@@ -54,19 +54,30 @@
       loadExams();
       form.reset();
     });
-
+    document.getElementById('email').addEventListener('blur', loadExams);  
     async function loadExams() {
-      const res = await fetch(API_URL);
-      const exams = await res.json();
-      examList.innerHTML = '';
-      exams.forEach(exam => {
-        const li = document.createElement('li');
-        li.textContent = `${exam.subject} — ${exam.date} at ${exam.time} (by ${exam.studentName})`;
-        examList.appendChild(li);
-      });
-    }
+  const email = document.getElementById('email').value.trim(); 
+  if (!email) {
+    examList.innerHTML = '<li>Please enter your email to see your exams.</li>';
+    return;
+  }
 
-    loadExams();
+  const res = await fetch(`/api/exams?email=${encodeURIComponent(email)}`);  
+  const exams = await res.json();
+
+  examList.innerHTML = '';
+
+  if (exams.length === 0) {
+    examList.innerHTML = '<li>No exams scheduled yet.</li>';
+  } else {
+    exams.forEach(exam => {
+      const li = document.createElement('li');
+      li.textContent = `${exam.subject} — ${exam.date} at ${exam.time} (by ${exam.studentName})`;
+      examList.appendChild(li);
+    });
+  }
+}
+
   </script>
 
 </body>
